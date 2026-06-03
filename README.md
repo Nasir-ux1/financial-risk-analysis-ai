@@ -1,5 +1,13 @@
 # Financial Risk Analysis AI Assistant
 
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![LangChain](https://img.shields.io/badge/LangChain-1C3C3A?style=flat-square)](https://github.com/langchain-ai/langchain)
+[![FAISS](https://img.shields.io/badge/FAISS-blue?style=flat-square)](https://github.com/facebookresearch/faiss)
+[![Claude API](https://img.shields.io/badge/Claude%20API-D97706?style=flat-square)](https://www.anthropic.com/claude)
+[![Python 3.12](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Pytest](https://img.shields.io/badge/Pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white)](https://docs.pytest.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+
 An AI-powered credit risk assessment and regulatory compliance platform built with **Python**, **FastAPI**, **RAG (LangChain + FAISS)**, and **Claude API**. 
 
 The system allows credit risk officers to submit custom queries or upload JSON financial statements. It automatically extracts financial ratios, fetches relevant compliance directives from Basel III, IFRS 9, and SEC regulations, and uses Claude (Anthropic API) to formulate structured risk profiles complete with vector similarity citations, confidence ratings, and LLM-as-a-Judge audits.
