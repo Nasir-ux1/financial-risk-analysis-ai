@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RiskAI Assistant — Financial Risk Analysis & RAG Platform</title>
+    <!-- Google Fonts: Inter and Fira Code for logs -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style Stylesheet -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- App Container -->
+    <div id="app" class="app-container hidden">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <i class="fa-solid fa-shield-halved brand-icon"></i>
+                <div class="brand-text">
+                    <h1>RiskAI</h1>
+                    <span>Assistant v1.0</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-line"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-tab="assessment">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Risk Assessment
+                </a>
+                <a href="#" class="nav-item" data-tab="workshop">
+                    <i class="fa-solid fa-microchip"></i> Prompt Workshop
+                </a>
+                <a href="#" class="nav-item" data-tab="rag">
+                    <i class="fa-solid fa-book-bookmark"></i> RAG Explorer
+                </a>
+            </nav>
+
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    <i class="fa-solid fa-user-tie"></i>
+                </div>
+                <div class="user-info">
+                    <h4 id="user-email">analyst@riskai.com</h4>
+                    <span id="user-role" class="badge">ANALYST</span>
+                </div>
+                <button id="logout-btn" class="logout-icon-btn" title="Log Out">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header bar -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h2 id="tab-title">Platform Dashboard</h2>
+                    <p id="tab-subtitle">Real-time credit risk profiles, portfolio exposure, and vector corpus logs.</p>
+                </div>
+                <div class="header-actions">
+                    <div class="environment-badge">
+                        <span class="pulse-dot"></span> Simulated Mode
+                    </div>
+                </div>
+            </header>
+
+            <!-- TABS CONTAINER -->
+            <div class="tab-content-container">
+                
+                <!-- 1. DASHBOARD TAB -->
+                <section id="tab-dashboard" class="tab-pane active">
+                    <!-- Metric Cards Row -->
+                    <div class="metrics-grid">
+                        <div class="metric-card glass">
+                            <div class="metric-icon bg-indigo-soft"><i class="fa-solid fa-building"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">Monitored Companies</span>
+                                <h3 id="stat-companies" class="metric-value">0</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card glass">
+                            <div class="metric-icon bg-emerald-soft"><i class="fa-solid fa-scale-balanced"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">RAG Guideline Clauses</span>
+                                <h3 id="stat-clauses" class="metric-value">0</h3>
+                            </div>
+                        </div>
+                        <div class="metric-card glass">
+                            <div class="metric-icon bg-amber-soft"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                            <div class="metric-data">
+                                <span class="metric-label">Completed Assessments</span>
+                                <h3 id="stat-assessments" class="metric-value">0</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Layout Section -->
+                    <div class="dashboard-layout">
+                        <!-- Left Panel: Companies list -->
+                        <div class="panel glass">
+                            <div class="panel-header">
+                                <h3>Company Risk Profiles</h3>
+                                <button id="open-add-company-btn" class="btn btn-sm btn-outline"><i class="fa-solid fa-plus"></i> Add Company</button>
+                            </div>
+                            <div class="company-list-wrapper">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Company</th>
+                                            <th>Ticker</th>
+                                            <th>Industry</th>
+                                            <th>Altman Z</th>
+                                            <th>Risk Rating</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="company-table-body">
+                                        <!-- Companies dynamic list -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Right Panel: Company Risk metrics detail -->
+                        <div class="panel glass" id="company-detail-panel">
+                            <div class="panel-header">
+                                <h3>Credit Analytics Visualizer</h3>
+                                <span id="detail-company-badge" class="badge">Select a Company</span>
+                            </div>
+                            <div id="company-detail-empty" class="panel-empty">
+                                <i class="fa-solid fa-chart-pie empty-icon"></i>
+                                <p>Select a company from the left panel to inspect credit ratios and risk assessments history.</p>
+                            </div>
+                            <div id="company-detail-content" class="company-detail-grid hidden">
+                                <div class="detail-header-info">
+                                    <h2 id="detail-name">Company Name</h2>
+                                    <p><span id="detail-ticker">TKR</span> &bull; <span id="detail-industry">Industry</span></p>
+                                </div>
+                                <div class="risk-gauge-box">
+                                    <div class="gauge-label">Overall Risk Score</div>
+                                    <div class="gauge-value" id="detail-risk-score">0</div>
+                                    <div class="gauge-bar-bg">
+                                        <div class="gauge-bar-fill" id="detail-risk-fill"></div>
+                                    </div>
+                                    <div class="gauge-rating" id="detail-risk-rating">LOW</div>
+                                </div>
+                                
+                                <div class="metrics-breakdown">
+                                    <h4>Calculated Credit Ratios</h4>
+                                    <div class="ratio-bars-container">
+                                        <div class="ratio-item">
+                                            <div class="ratio-info">
+                                                <span>Altman Z-Score <i class="fa-solid fa-circle-info" title="Z > 2.9 (Safe), 1.8 < Z < 2.9 (Grey), Z < 1.8 (Distress)"></i></span>
+                                                <span class="ratio-val" id="ratio-altman">0.0</span>
+                                            </div>
+                                            <div class="ratio-bar-bg"><div class="ratio-bar-fill" id="fill-altman"></div></div>
+                                        </div>
+                                        <div class="ratio-item">
+                                            <div class="ratio-info">
+                                                <span>Current Ratio (Liquidity) <i class="fa-solid fa-circle-info" title="Current Assets / Current Liabilities. > 1.5 is healthy."></i></span>
+                                                <span class="ratio-val" id="ratio-current">0.0</span>
+                                            </div>
+                                            <div class="ratio-bar-bg"><div class="ratio-bar-fill" id="fill-current"></div></div>
+                                        </div>
+                                        <div class="ratio-item">
+                                            <div class="ratio-info">
+                                                <span>Debt to Equity (Leverage) <i class="fa-solid fa-circle-info" title="Total Liabilities / Total Equity. < 1.5 is healthy."></i></span>
+                                                <span class="ratio-val" id="ratio-debt">0.0</span>
+                                            </div>
+                                            <div class="ratio-bar-bg"><div class="ratio-bar-fill" id="fill-debt"></div></div>
+                                        </div>
+                                        <div class="ratio-item">
+                                            <div class="ratio-info">
+                                                <span>Interest Coverage <i class="fa-solid fa-circle-info" title="EBIT / Interest Expense. > 3.0 is healthy."></i></span>
+                                                <span class="ratio-val" id="ratio-coverage">0.0</span>
+                                            </div>
+                                            <div class="ratio-bar-bg"><div class="ratio-bar-fill" id="fill-coverage"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. RISK ASSESSMENT PORTAL TAB -->
+                <section id="tab-assessment" class="tab-pane">
+                    <div class="assessment-grid">
+                        <!-- Left Panel: Input controls -->
+                        <div class="panel glass">
+                            <div class="panel-header">
+                                <h3>New Assessment Query</h3>
+                            </div>
+                            <form id="assessment-form" class="standard-form">
+                                <div class="form-group">
+                                    <label for="assess-company">Target Company (Optional)</label>
+                                    <select id="assess-company" name="company_id">
+                                        <option value="">-- General Assessment (No company ratios) --</option>
+                                        <!-- Dynamic company option seeds -->
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <div class="form-label-row">
+                                        <label for="statement-file">Or Upload Financial Statement (JSON)</label>
+                                        <span class="help-text">Auto-creates / updates company profile</span>
+                                    </div>
+                                    <div class="file-upload-box">
+                                        <input type="file" id="statement-file" accept=".json">
+                                        <label for="statement-file" class="file-label">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span>Choose JSON statement file...</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="assess-query">Credit Risk Query / Analysis Prompt</label>
+                                    <textarea id="assess-query" placeholder="e.g. Assess corporate debt limits, credit defaults probability, or covenant compliance thresholds..." required></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Prompt Engineering Variant</label>
+                                    <div class="radio-group-cards">
+                                        <label class="radio-card active">
+                                            <input type="radio" name="prompt_variant" value="COT" checked>
+                                            <div class="radio-card-content">
+                                                <div class="var-title">Chain-of-Thought (CoT)</div>
+                                                <p>AI reasons step-by-step through metrics and rules before stating conclusion.</p>
+                                            </div>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="prompt_variant" value="FEW_SHOT">
+                                            <div class="radio-card-content">
+                                                <div class="var-title">Few-Shot</div>
+                                                <p>Includes in-context examples of financial credit ratings.</p>
+                                            </div>
+                                        </label>
+                                        <label class="radio-card">
+                                            <input type="radio" name="prompt_variant" value="ZERO_SHOT">
+                                            <div class="radio-card-content">
+                                                <div class="var-title">Zero-Shot</div>
+                                                <p>Standard query template mapping metrics directly.</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <button type="submit" id="assess-submit-btn" class="btn btn-primary btn-block">
+                                    <i class="fa-solid fa-bolt"></i> Generate Assessment
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Right Panel: Output report details -->
+                        <div class="panel glass flex-column">
+                            <div class="panel-header">
+                                <h3>Analysis Report & Audit Logs</h3>
+                                <span class="badge badge-success hidden" id="report-complete-badge">Completed</span>
+                            </div>
+                            <div id="assessment-result-empty" class="panel-empty flex-grow">
+                                <i class="fa-solid fa-file-invoice empty-icon"></i>
+                                <p>Fill in parameters on the left and submit to trigger vector similarity searches and Claude risk assessments.</p>
+                            </div>
+                            <div id="assessment-result-content" class="assessment-report hidden flex-grow">
+                                <!-- Tabs for Report vs Judge vs Source Citations -->
+                                <div class="report-tabs">
+                                    <button class="report-tab-btn active" data-report-pane="report">Risk Assessment</button>
+                                    <button class="report-tab-btn" data-report-pane="judge">LLM-as-a-Judge Audit</button>
+                                    <button class="report-tab-btn" data-report-pane="citations">RAG Citations (<span id="citation-count">0</span>)</button>
+                                </div>
+
+                                <div class="report-tab-panes">
+                                    <!-- REPORT PANE -->
+                                    <div class="report-pane active" id="pane-report">
+                                        <div class="confidence-summary">
+                                            <span class="conf-lbl">AI Confidence Indicator:</span>
+                                            <span class="conf-val" id="report-confidence">0%</span>
+                                            <div class="conf-meter"><div class="conf-meter-fill" id="fill-confidence"></div></div>
+                                        </div>
+                                        <div class="report-text-wrapper scrollable">
+                                            <pre id="report-text">Assessment text goes here...</pre>
+                                        </div>
+                                    </div>
+
+                                    <!-- JUDGE PANE -->
+                                    <div class="report-pane" id="pane-judge">
+                                        <div class="judge-scores-grid">
+                                            <div class="judge-score-card">
+                                                <div class="js-lbl">Accuracy</div>
+                                                <div class="js-val" id="judge-score-acc">0.0</div>
+                                            </div>
+                                            <div class="judge-score-card">
+                                                <div class="js-lbl">Completeness</div>
+                                                <div class="js-val" id="judge-score-comp">0.0</div>
+                                            </div>
+                                            <div class="judge-score-card">
+                                                <div class="js-lbl">Regulatory Alignment</div>
+                                                <div class="js-val" id="judge-score-align">0.0</div>
+                                            </div>
+                                        </div>
+                                        <div class="judge-feedback-wrapper">
+                                            <h4>Judge Auditor Feedback</h4>
+                                            <p id="judge-feedback-text">Feedback text here...</p>
+                                        </div>
+                                    </div>
+
+                                    <!-- CITATIONS PANE -->
+                                    <div class="report-pane" id="pane-citations">
+                                        <div id="citations-list" class="citations-scrollable">
+                                            <!-- Dynamically populated reference cards -->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. PROMPT WORKSHOP TAB -->
+                <section id="tab-workshop" class="tab-pane">
+                    <div class="workshop-intro panel glass">
+                        <div class="workshop-intro-header">
+                            <i class="fa-solid fa-compass-drafting intro-icon"></i>
+                            <div>
+                                <h3>Prompt Version Engineering Workshop</h3>
+                                <p>Run comparative evaluations. Submit a credit query to execute Zero-Shot, Few-Shot, and Chain-of-Thought prompts side-by-side, assessing accuracy gains directly via the LLM-as-a-Judge audit rubric.</p>
+                            </div>
+                        </div>
+                        <form id="compare-form" class="compare-input-row">
+                            <div class="input-col select-col">
+                                <select id="compare-company" class="form-control-minimal">
+                                    <option value="">-- General Comparison --</option>
+                                </select>
+                            </div>
+                            <div class="input-col text-col">
+                                <input type="text" id="compare-query" placeholder="Type credit evaluation query to compare prompts..." required class="form-control-minimal">
+                            </div>
+                            <button type="submit" id="compare-submit-btn" class="btn btn-primary"><i class="fa-solid fa-code-compare"></i> Compare Prompts</button>
+                        </form>
+                    </div>
+
+                    <!-- Comparison cards layout -->
+                    <div id="comparison-loader" class="comparison-loader hidden">
+                        <i class="fa-solid fa-spinner fa-spin spinner-large"></i>
+                        <p>Processing 3 pipeline prompts variants and auditing results via LLM-as-a-Judge...</p>
+                    </div>
+
+                    <div id="comparison-results" class="comparison-grid hidden">
+                        <!-- ZERO SHOT CARD -->
+                        <div class="panel glass compare-card">
+                            <div class="compare-card-header bg-zero">
+                                <h4>Variant 1: Zero-Shot</h4>
+                                <span class="badge font-mono" id="comp-score-zero">Judge: 68%</span>
+                            </div>
+                            <div class="compare-card-body">
+                                <div class="comp-metrics-row">
+                                    <span>Acc: <strong id="comp-acc-zero">0.0</strong></span>
+                                    <span>Comp: <strong id="comp-comp-zero">0.0</strong></span>
+                                    <span>Align: <strong id="comp-align-zero">0.0</strong></span>
+                                </div>
+                                <div class="comp-reportscroll scrollable">
+                                    <pre id="comp-text-zero"></pre>
+                                </div>
+                                <div class="comp-feedback-box">
+                                    <h5>Judge Critique</h5>
+                                    <p id="comp-feedback-zero"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FEW SHOT CARD -->
+                        <div class="panel glass compare-card">
+                            <div class="compare-card-header bg-few">
+                                <h4>Variant 2: Few-Shot</h4>
+                                <span class="badge font-mono" id="comp-score-few">Judge: 84%</span>
+                            </div>
+                            <div class="compare-card-body">
+                                <div class="comp-metrics-row">
+                                    <span>Acc: <strong id="comp-acc-few">0.0</strong></span>
+                                    <span>Comp: <strong id="comp-comp-few">0.0</strong></span>
+                                    <span>Align: <strong id="comp-align-few">0.0</strong></span>
+                                </div>
+                                <div class="comp-reportscroll scrollable">
+                                    <pre id="comp-text-few"></pre>
+                                </div>
+                                <div class="comp-feedback-box">
+                                    <h5>Judge Critique</h5>
+                                    <p id="comp-feedback-few"></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CHAIN OF THOUGHT CARD -->
+                        <div class="panel glass compare-card highlight-card">
+                            <div class="compare-card-header bg-cot">
+                                <h4>Variant 3: Chain-of-Thought (CoT)</h4>
+                                <span class="badge font-mono" id="comp-score-cot">Judge: 96%</span>
+                            </div>
+                            <div class="compare-card-body">
+                                <div class="comp-metrics-row">
+                                    <span>Acc: <strong id="comp-acc-cot">0.0</strong></span>
+                                    <span>Comp: <strong id="comp-comp-cot">0.0</strong></span>
+                                    <span>Align: <strong id="comp-align-cot">0.0</strong></span>
+                                </div>
+                                <div class="comp-reportscroll scrollable">
+                                    <pre id="comp-text-cot"></pre>
+                                </div>
+                                <div class="comp-feedback-box">
+                                    <h5>Judge Critique</h5>
+                                    <p id="comp-feedback-cot"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. RAG EXPLORER TAB -->
+                <section id="tab-rag" class="tab-pane">
+                    <div class="rag-layout">
+                        <!-- Left Panel: Add regulatory reference -->
+                        <div class="panel glass admin-only-section" id="admin-rag-panel">
+                            <div class="panel-header">
+                                <h3>Ingest Regulatory Guideline</h3>
+                                <span class="badge badge-admin">ADMIN ONLY</span>
+                            </div>
+                            <form id="rag-ingest-form" class="standard-form">
+                                <div class="form-group">
+                                    <label for="rag-source">Regulation Framework / Source</label>
+                                    <select id="rag-source" required>
+                                        <option value="BASEL_III">Basel III Accord</option>
+                                        <option value="IFRS_9">IFRS 9 Impairment Standard</option>
+                                        <option value="SEC_10K">SEC Form 10-K Guidelines</option>
+                                        <option value="OTHER">Other Custom Covenants</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rag-section">Section / Article Reference</label>
+                                    <input type="text" id="rag-section" placeholder="e.g. Standard 5.5.15: ECL Defaults" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="rag-content">Regulatory Text Content</label>
+                                    <textarea id="rag-content" placeholder="Paste official regulatory clause, compliance rules, leverage constraints, or capital covenants text here..." required></textarea>
+                                </div>
+                                <div class="button-row-rag">
+                                    <button type="submit" id="rag-ingest-btn" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Ingest Guideline</button>
+                                    <button type="button" id="rag-reindex-btn" class="btn btn-outline" title="Rebuild FAISS vector caches"><i class="fa-solid fa-arrows-rotate"></i> Reindex FAISS</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Right Panel: Browse references -->
+                        <div class="panel glass flex-column">
+                            <div class="panel-header">
+                                <h3>RAG Vector Database Corpus</h3>
+                                <div class="search-input-box">
+                                    <input type="text" id="rag-search-input" placeholder="Search guidelines in FAISS...">
+                                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="guidelines-list-wrapper scrollable flex-grow">
+                                <div id="guidelines-empty" class="panel-empty hidden">
+                                    <i class="fa-solid fa-folder-open empty-icon"></i>
+                                    <p>No regulatory references found. Seed database or add one above.</p>
+                                </div>
+                                <div id="guidelines-container" class="guidelines-cards-list">
+                                    <!-- Dynamic regulatory cards -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- AUTH/LOGIN SCREEN MODAL -->
+    <div id="login-screen" class="login-container-wrapper">
+        <div class="login-card glass">
+            <div class="login-brand">
+                <i class="fa-solid fa-shield-halved brand-logo-icon"></i>
+                <h2>RiskAI Assistant</h2>
+                <p>Enterprise Financial Risk Analysis & RAG Platform</p>
+            </div>
+            
+            <div id="login-error-msg" class="alert alert-danger hidden">
+                <i class="fa-solid fa-triangle-exclamation"></i> Invalid credentials.
+            </div>
+
+            <!-- Login form -->
+            <form id="login-form" class="standard-form">
+                <div class="form-group">
+                    <label for="login-email">Corporate Email</label>
+                    <input type="email" id="login-email" required placeholder="analyst@riskai.com" value="analyst@riskai.com">
+                </div>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••" value="analystpassword">
+                </div>
+                <div class="form-help-row">
+                    <div class="demo-accounts-info">
+                        <strong>Demo Accounts:</strong><br>
+                        <span>Analyst: <code>analyst@riskai.com</code> / <code>analystpassword</code></span><br>
+                        <span>Admin: <code>admin@riskai.com</code> / <code>adminpassword</code></span>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Access Platform</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD COMPANY -->
+    <div id="company-modal" class="modal-overlay hidden">
+        <div class="modal-card glass">
+            <div class="modal-header">
+                <h3>Register Company Profile</h3>
+                <button id="close-company-modal" class="modal-close-btn">&times;</button>
+            </div>
+            <form id="add-company-form" class="standard-form">
+                <div class="form-group-row">
+                    <div class="form-group flex-1">
+                        <label for="comp-name">Company Name</label>
+                        <input type="text" id="comp-name" required placeholder="e.g. Apex Builders">
+                    </div>
+                    <div class="form-group width-30">
+                        <label for="comp-ticker">Ticker</label>
+                        <input type="text" id="comp-ticker" required placeholder="e.g. ABS">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="comp-industry">Industry Sector</label>
+                    <input type="text" id="comp-industry" required placeholder="e.g. Real Estate">
+                </div>
+                
+                <h4 class="form-section-title">Financial Balance Sheet Summary (Optional)</h4>
+                <div class="financials-inputs-grid">
+                    <div class="form-group">
+                        <label for="fin-assets">Total Assets ($)</label>
+                        <input type="number" id="fin-assets" placeholder="10000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-liabs">Total Liabilities ($)</label>
+                        <input type="number" id="fin-liabs" placeholder="6000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-cassets">Current Assets ($)</label>
+                        <input type="number" id="fin-cassets" placeholder="3000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-cliabs">Current Liabilities ($)</label>
+                        <input type="number" id="fin-cliabs" placeholder="2000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-earnings">Retained Earnings ($)</label>
+                        <input type="number" id="fin-earnings" placeholder="2000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-ebit">Operating Income / EBIT ($)</label>
+                        <input type="number" id="fin-ebit" placeholder="1200000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-revenue">Total Revenue ($)</label>
+                        <input type="number" id="fin-revenue" placeholder="12000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-equity">Market Cap / Equity ($)</label>
+                        <input type="number" id="fin-equity" placeholder="8000000" step="any">
+                    </div>
+                    <div class="form-group">
+                        <label for="fin-interest">Interest Expense ($)</label>
+                        <input type="number" id="fin-interest" placeholder="200000" step="any">
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" id="cancel-company-btn" class="btn btn-outline">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Register & Compute Ratios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- UI ALERTS FLOATER CONTAINER -->
+    <div id="alerts-container" class="alerts-container"></div>
+
+    <!-- Dynamic JavaScript Application Controller -->
+    <script src="/static/app.js"></script>
+</body>
+</html>
